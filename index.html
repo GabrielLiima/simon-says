@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Simon</title>
+
+    <!-- Bootstrap 5 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+      crossorigin="anonymous"
+    />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Press+Start+2P"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="styles/styles.css" />
+    <link rel="icon" href="images/favicon.ico" />
+  </head>
+  <body>
+    <h1 id="level-title">
+      <span class="large-screen">Click anywhere to start</span
+      ><span class="smaller-screen">Tap anywhere to start</span>
+    </h1>
+    <div class="row justify-content-center">
+      <div class="col-auto">
+        <button id="green" class="button green"></button>
+      </div>
+      <div class="col-auto">
+        <button id="red" class="button red"></button>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-auto">
+        <button id="yellow" class="button yellow"></button>
+      </div>
+      <div class="col-auto">
+        <button id="blue" class="button blue"></button>
+      </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="index.js"></script>
+  </body>
+</html>
