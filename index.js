@@ -23,7 +23,8 @@ const playSound = (name) => {
 
 const nextLevel = () => {
   // Update level
-  $("h1").text(`Level ${++level}`);
+  $(".large-screen").text(`Level ${++level}`);
+  $(".smaller-screen").text(`Level ${level}`);
 
   // Add a random color to the sequence
   let a = Math.random() * 4;
@@ -118,7 +119,8 @@ const startGame = () => {
     }, 200);
 
     playSound("wrong");
-    $("h1").html("Game Over!<p>Press any key to restart</p>");
+    $(".large-screen").html("Game Over!<p>Press any key to restart</p>");
+    $(".smaller-screen").html("Game Over!<p>Tap anywhere to restart</p>");
 
     // Stop the flashing animation (if still happening)
     for (var i = 0; i < timeouts.length; i++) {
@@ -131,10 +133,12 @@ const startGame = () => {
     level = 0;
     speed = 1;
 
-    // Start game again when any key is pressed
-    $(document).keypress(() => {
-      startGame();
-    });
+    // Start game again when the user clicks anywhere
+    setTimeout(() => {
+      $(document).click(() => {
+        startGame();
+      });
+    }, 100);
   };
 
   setTimeout(() => {
@@ -142,7 +146,7 @@ const startGame = () => {
   }, 300);
 };
 
-// Start game when the user clicks anywhere on the screen
+// Start game when the user clicks anywhere
 $(document).click(() => {
   startGame();
 });
