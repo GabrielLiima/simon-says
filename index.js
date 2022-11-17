@@ -69,14 +69,14 @@ const checkAnswer = (i) => {
   }
 };
 
+// Keep track of how many
+// colors have been pressed
+let j = 0;
+
 // Validates each button click.
 // Regular function instead of arrow
 // function because of the "this" keyword
 function validateChoice() { 
-
-  // Keep track of how many
-  // colors have been pressed
-  let j = 0;
 
   // Add clicked color to userPattern array
   const buttonColor = $(this).attr("id");
@@ -84,6 +84,7 @@ function validateChoice() {
 
   // Check if the right color is clicked
   if (checkAnswer(j)) {
+    j++;
 
     flashColor(buttonColor, 100);
     playSound(buttonColor);
@@ -121,8 +122,6 @@ function validateChoice() {
     // Go to Game Over state
     gameOver();
   }
-
-  j++;
 }
 
 // Advances to the next level
@@ -192,6 +191,7 @@ const startGame = () => {
   // Disable document click listener  
   $(document).off("click");
 
+  
   $("button").click(validateChoice);
 
   // Advance to next level
