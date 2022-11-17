@@ -17,6 +17,12 @@ p {
   user-select: none;
 }
 
+@media (min-width: 765px) {
+  .smaller-screen {
+    display: none;
+  }
+}
+
 .button {
   border: 10px solid black;
   border-radius: 20%;
@@ -64,15 +70,21 @@ p {
   background-color: rgb(30, 30, 255);
 }
 
-.pressed {
-  box-shadow: 0 0 20px white;
-}
-
+/* Added through javaScript */
 .game-over {
   background-color: red;
   opacity: 0.8;
 }
 
+.pressed {
+  box-shadow: 0 0 20px white;
+}
+
+.disabled {
+  cursor: not-allowed;
+}
+
+/* Tablet and smaller devices */
 @media (max-width: 765px) {
   p {
     font-size: 1rem;
@@ -86,14 +98,6 @@ p {
     user-select: none;
   }
 
-  .button {
-    border: 8px solid black;
-    border-radius: 20%;
-    height: 9rem;
-    margin: 5px;
-    width: 9rem;
-  }
-
   .large-screen {
     display: none;
   }
@@ -101,10 +105,12 @@ p {
   .col-auto {
     padding: 0 0.1rem 0;
   }
-}
 
-@media (min-width: 765px) {
-  .smaller-screen {
-    display: none;
+  .button {
+    border: 8px solid black;
+    border-radius: 20%;
+    height: 9rem;
+    margin: 5px;
+    width: 9rem;
   }
 }

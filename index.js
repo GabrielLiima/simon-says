@@ -1,13 +1,31 @@
+const colors = ["green", "red", "yellow", "blue"];
+
 let gamePattern = [];
 let userPattern = [];
-let timeouts = [];
-
-const colors = ["green", "red", "yellow", "blue"];
+let timeouts = []; // Keep track of set timeouts
 
 let level = 0;
 let speed = 1;
 
+// Returns a promise that resolves after a delay
+const wait = (milliseconds) => {
+
+  return new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
+};
+
+// Adds a random color to the sequence
+const increaseSequence = () => {
+  let num = Math.random() * 4;
+  num = Math.floor(num);
+
+  gamePattern.push(colors[num]);
+};
+
+// Flashes a button
 const flashColor = (color, delay) => {
+
   // Change background color to a lighter shade
   $(`.${color}`).addClass(`${color}-flash`);
 
@@ -21,21 +39,13 @@ const playSound = (name) => {
   new Audio(`sounds/${name}.mp3`).play();
 };
 
-const nextLevel = () => {
-  // Update level
-  $(".large-screen").text(`Level ${++level}`);
-  $(".smaller-screen").text(`Level ${level}`);
-
-  // Add a random color to the sequence
-  let a = Math.random() * 4;
-  a = Math.floor(a);
-
-  gamePattern.push(colors[a]);
-
-  // Flash each color in the sequence and
-  // play a sound corresponding to the color
+// Plays the current sequence
+const playSequence = () => {
   let i = 1;
+
   for (const color in gamePattern) {
+
+    // Flash each color in the sequence
     timeouts.push(
       setTimeout(() => {
         flashColor(gamePattern[color], 400);
@@ -47,106 +57,150 @@ const nextLevel = () => {
   }
 };
 
+// Checks if the most recent color
+// pressed matches the sequence correctly
 const checkAnswer = (i) => {
+
   if (userPattern[i] === gamePattern[i]) {
     return 1;
+
   } else {
     return 0;
   }
 };
 
-const startGame = () => {
-  // Remove keypress listener
-  $(document).off("click");
+// Validates each button click.
+// Regular function instead of arrow
+// function because of the "this" keyword
+function validateChoice() { 
 
-  // Keep track of how many colors have been pressed
+  // Keep track of how many
+  // colors have been pressed
   let j = 0;
 
-  // Add click listener to all buttons
-  $("button").click(function () {
-    // Each button has an id corresponding to its color
-    const buttonColor = $(this).attr("id");
+  // Add clicked color to userPattern array
+  const buttonColor = $(this).attr("id");
+  userPattern.push(buttonColor);
 
-    userPattern.push(buttonColor);
+  // Check if the right color is clicked
+  if (checkAnswer(j)) {
 
-    // If the right color is clicked
-    if (checkAnswer(j)) {
-      j++;
+    flashColor(buttonColor, 100);
+    playSound(buttonColor);
 
-      // Pressing animation
-      flashColor(buttonColor, 100);
+    // If this is the last color of the sequence
+    if (level === userPattern.length) {
 
-      playSound(buttonColor);
-
-      // If this is the last color of the sequence
-      if (level === userPattern.length) {
-        // Stop the flashing animation before going
-        // into next level (if still happening)
-        for (var i = 0; i < timeouts.length; i++) {
-          clearTimeout(timeouts[i]);
-        }
-
-        userPattern = [];
-        j = 0;
-
-        // Go to next level
-        setTimeout(() => {
-          // Increse speed until level 10
-          if (level < 10) {
-            speed += 0.1;
-          }
-          nextLevel();
-        }, 300);
+      // Stop the flashing animation before going
+      // into next level (if still happening)
+      for (var i = 0; i < timeouts.length; i++) {
+        clearTimeout(timeouts[i]);
       }
 
-      // If the wrong color is clicked
-    } else {
-      // Remove click listener
-      $("button").off("click");
+      // Reset
+      userPattern = [];
+      j = 0;
 
-      // Go to Game Over state
-      gameOver();
-    }
-  });
+      // Increse speed until level 10
+      if (level < 10) {
+        speed += 0.1;
+      }
 
-  const gameOver = () => {
-    // Change background color to red
-    $("body").addClass("game-over");
-
-    // Revert background color
-    setTimeout(() => {
-      $("body").removeClass("game-over");
-    }, 200);
-
-    playSound("wrong");
-    $(".large-screen").html("Game Over!<p>Press any key to restart</p>");
-    $(".smaller-screen").html("Game Over!<p>Tap anywhere to restart</p>");
-
-    // Stop the flashing animation (if still happening)
-    for (var i = 0; i < timeouts.length; i++) {
-      clearTimeout(timeouts[i]);
+      // Go to next level
+      setTimeout(() => {
+        nextLevel();
+      }, 300);
     }
 
-    // Reset everything
-    userPattern = [];
-    gamePattern = [];
-    level = 0;
-    speed = 1;
+  // If the wrong color is clicked
+  } else {
 
-    // Start game again when the user clicks anywhere
-    setTimeout(() => {
-      $(document).click(() => {
-        startGame();
-      });
-    }, 100);
-  };
+    // Disable all buttons
+    $("button").off("click");
 
+    // Go to Game Over state
+    gameOver();
+  }
+
+  j++;
+}
+
+// Advances to the next level
+async function nextLevel() {
+
+  // Update level text
+  $(".large-screen").text(`Level ${++level}`);
+  $(".smaller-screen").text(`Level ${level}`);
+
+  increaseSequence();
+
+  // Disable clicks while sequence is being played
+  $("button").off("click");
+  $("button").prop("disabled", true);
+  $("button").addClass("disabled");
+  
+  playSequence();
+
+  // Wait for most of the sequence to be played
+  await wait((850 * level) / speed);
+
+  // Re-enable clicks
+  $("button").click(validateChoice);
+  $("button").prop("disabled", false);
+  $("button").removeClass("disabled");
+}
+
+// Goes to Game Over state
+const gameOver = () => {
+
+  // Change background color to red
+  $("body").addClass("game-over");
+
+  // Revert background color
+  setTimeout(() => {
+    $("body").removeClass("game-over");
+  }, 200);
+
+  playSound("wrong");
+
+  // Change to Game Over text
+  $(".large-screen").html("Game Over!<p>Press any key to restart</p>");
+  $(".smaller-screen").html("Game Over!<p>Tap anywhere to restart</p>");
+
+  // Stop the flashing animation (if still happening)
+  for (var i = 0; i < timeouts.length; i++) {
+    clearTimeout(timeouts[i]);
+  }
+
+  // Reset
+  userPattern = [];
+  gamePattern = [];
+  level = 0;
+  speed = 1;
+
+  // Start game again when the user clicks anywhere
+  setTimeout(() => {
+    $(document).click(() => {
+      startGame();
+    });
+  }, 100);
+};
+
+// Starts the game
+const startGame = () => {
+
+  // Disable document click listener  
+  $(document).off("click");
+
+  $("button").click(validateChoice);
+
+  // Advance to next level
   setTimeout(() => {
     nextLevel();
   }, 300);
 };
 
-// Start game when the user clicks anywhere
+// Start the game when the user clicks anywhere
 $(document).click(() => {
   startGame();
 });
