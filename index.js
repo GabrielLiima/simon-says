@@ -164,7 +164,7 @@ const gameOver = () => {
   playSound("wrong");
 
   // Change to Game Over text
-  $(".large-screen").html("Game Over!<p>Press any key to restart</p>");
+  $(".large-screen").html("Game Over!<p>Click anywhere to restart</p>");
   $(".smaller-screen").html("Game Over!<p>Tap anywhere to restart</p>");
 
   // Stop the flashing animation (if still happening)
